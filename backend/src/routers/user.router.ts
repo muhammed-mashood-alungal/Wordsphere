@@ -1,12 +1,41 @@
 import { Router } from "express";
+import { UserService } from "../services";
+import { UserController } from "../controllers";
+import { authMiddleware } from "../middlewares";
 
-const userRouter = Router();
+export const userRouter = Router();
 
-userRouter.get("/");
-userRouter.post("/");
-userRouter.put("/");
-userRouter.delete("/");
-userRouter.patch("/");
+const userService = new UserService();
+const userController = new UserController(userService);
 
+userRouter.get(
+  "/me",
+  authMiddleware,
+  userController.getUserData.bind(userController)
+);
+userRouter.get(
+  "/",
+  authMiddleware,
+  userController.getAllUsers.bind(userController)
+);
+userRouter.get(
+  "/:userId",
+  authMiddleware,
+  userController.getUserById.bind(userController)
+);
+userRouter.put(
+  "/:userId",
+  authMiddleware,
+  userController.updateUser.bind(userController)
+);
+userRouter.delete(
+  "/:userId",
+  authMiddleware,
+  userController.deleteUser.bind(userController)
+);
+userRouter.patch(
+  "/:userId/restore",
+  authMiddleware,
+  userController.restoreUser.bind(userController)
+);
 
-export default userRouter
