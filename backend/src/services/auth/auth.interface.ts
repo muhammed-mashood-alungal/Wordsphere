@@ -8,4 +8,5 @@ export interface IAuthService {
     password: string
   ): Promise<string>;
   authMe(token: string): JwtPayload | string;
+  logout(token: string): Promise<void>;
 }

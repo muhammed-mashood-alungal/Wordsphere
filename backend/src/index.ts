@@ -1,11 +1,19 @@
 import express from "express";
-import { connectDB, env } from "./configs";
+import { connectDB, env, connectRedis } from "./configs";
 import { errorHandler, routeNotFound } from "./middlewares";
+import { authRouter } from "./routers";
 
 const app = express();
 const port = env.PORT;
 
 connectDB();
+connectRedis();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ALL ROUTES
+app.use("/auth", authRouter);
 
 app.use(errorHandler);
 app.use(routeNotFound);
