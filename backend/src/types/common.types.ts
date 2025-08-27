@@ -7,3 +7,7 @@ export interface IPagination<T> {
   };
   data: T[];
 }
+
+export interface IFilterOptions {
+  [key: string]: string | number | boolean;
+}

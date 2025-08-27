@@ -4,13 +4,14 @@ import { IPagination, IUser, IUserResponse } from "../../types";
 import { IUserService } from "./user.interface";
 import { mapUserResponse } from "../../mappers";
 import { paginate } from "../../utils/pagination.util";
+import { FilterQuery } from "mongoose";
 
 export class UserService implements IUserService {
   async getAllUsers(options?: any): Promise<IPagination<IUserResponse>> {
-    const filter: any = {};
-    const page = options?.page || 1;
-    const skip = (page - 1) * (options?.limit || 10);
-    const limit = options?.limit || 10;
+    const filter: FilterQuery<IUser> = {};
+    const page = Number(options?.page) || 1;
+    const limit = Number(options.limit) || 10;
+    const skip = (page - 1) * limit;
 
     if (options?.search) {
       filter.name = { $regex: options.search, $options: "i" };
@@ -39,9 +40,9 @@ export class UserService implements IUserService {
     }).lean<IUser>();
     return user ? mapUserResponse(user) : null;
   }
-  
+
   async toggleDelete(userId: string, isDeleted: boolean): Promise<boolean> {
-    const result = await User.findByIdAndUpdate(userId, {  isDeleted });
+    const result = await User.findByIdAndUpdate(userId, { isDeleted });
     return result !== null;
   }
 }

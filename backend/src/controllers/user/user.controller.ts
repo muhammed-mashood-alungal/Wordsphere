@@ -4,6 +4,7 @@ import { IUserService } from "../../services";
 import { successResponse } from "../../utils";
 import { StatusCodes } from "http-status-codes";
 import { SUCCESS_RESPONSES } from "../../constants";
+import { IFilterOptions } from "../../types";
 
 export class UserController implements IUserController {
   constructor(private _userServices: IUserService) {}
@@ -13,7 +14,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users = await this._userServices.getAllUsers(req.query);
+      const users = await this._userServices.getAllUsers(req.query as IFilterOptions);
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK, { users });
     } catch (error) {
       next(error);
