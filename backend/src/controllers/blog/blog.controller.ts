@@ -45,10 +45,18 @@ export class BlogController implements IBlogController{
         }
     }
 
-    async toggleDelete(req: Request, res: Response,next : NextFunction): Promise<void> {
+    async deleteBlog(req: Request, res: Response,next : NextFunction): Promise<void> {
         try {
-            const result = await this._blogService.toggleDelete(req.params.id, req.body.isDeleted);
+            const result = await this._blogService.toggleDelete(req.params.id, true);
             successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.BLOG_DELETED, {result});
+        } catch (error) {
+            next(error);
+        }
+    }
+    async restoreBlog(req : Request , res : Response,next : NextFunction): Promise<void> {
+        try {
+            const result = await this._blogService.toggleDelete(req.params.id, false);
+            successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.BLOG_RESTORED, {result});
         } catch (error) {
             next(error);
         }

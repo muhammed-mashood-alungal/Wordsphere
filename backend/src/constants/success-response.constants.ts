@@ -8,4 +8,5 @@ export const SUCCESS_RESPONSES={
   BLOG_FOUND: "Blog retrieved successfully",
   BLOG_UPDATED: "Blog updated successfully",
   BLOG_DELETED: "Blog deleted successfully",
+  BLOG_RESTORED: "Blog restored successfully",
 } as const;
