@@ -73,7 +73,7 @@ const MainHome = () => {
     try {
       const { blog } = await BlogService.create(data, user?.id as string);
       toast.success("Blog created successfully!");
-      setBlogs([blog, ...blogs.slice(0, -1)]);
+      setBlogs([blog, ...blogs].slice(0, limit));
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     }

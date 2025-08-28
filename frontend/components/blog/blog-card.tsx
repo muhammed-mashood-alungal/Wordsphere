@@ -33,20 +33,28 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, setBlogs }) => {
       if (readingBlog) setReadingBlog(blog);
       toast.success("Blog updated successfully!");
     } catch (error) {
-      toast.error((error as Error).message || "Something went wrong. Please try again.");
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again."
+      );
     }
   };
 
   const handleDeletion = async (id: string) => {
     try {
       await BlogService.delete(id);
-      setBlogs((prev) =>
-        prev.map((b) => (b.id === id ? { ...b, isDeleted: true } : b))
-      );
+      if (user?.role == "admin") {
+        setBlogs((prev) =>
+          prev.map((b) => (b.id === id ? { ...b, isDeleted: true } : b))
+        );
+      } else {
+        setBlogs((prev) => prev.filter((b) => b.id !== id));
+      }
       toast.success("Blog deleted successfully");
       setReadingBlog(null);
     } catch (error) {
-      toast.error((error as Error).message || "Something went wrong. Please try again.");
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again."
+      );
     }
   };
 
@@ -58,7 +66,9 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, setBlogs }) => {
       );
       toast.success("Blog restored successfully");
     } catch (error) {
-      toast.error((error as Error).message || "Something went wrong. Please try again.");
+      toast.error(
+        (error as Error).message || "Something went wrong. Please try again."
+      );
     }
   };
 
