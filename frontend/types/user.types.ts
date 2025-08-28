@@ -9,7 +9,7 @@ export interface IUser {
   username: string;
   email: string;
   role: "user" | "admin";
-  isDeleted: Boolean;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
