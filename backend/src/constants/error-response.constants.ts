@@ -1,4 +1,3 @@
-import { FORBIDDEN } from "http-status-codes";
 
 export const ERROR_RESPONSES = {
   NOT_FOUND: "Endpoint Not Found",

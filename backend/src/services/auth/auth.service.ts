@@ -1,4 +1,3 @@
-import { JwtPayload } from "jsonwebtoken";
 import { ICreateUser, IUser, IUserResponse } from "../../types";
 import { IAuthService } from "./auth.interface";
 import {

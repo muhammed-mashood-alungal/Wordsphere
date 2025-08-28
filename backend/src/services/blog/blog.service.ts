@@ -4,7 +4,6 @@ import {
   IPagination,
   IBlog,
   IUser,
-  IUserResponse,
   IBlogResponse,
 } from "../../types";
 import { IBlogService } from "./blog.interface";

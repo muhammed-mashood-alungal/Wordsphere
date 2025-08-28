@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { UserService } from "../services";
 import { UserController } from "../controllers";
-import { authMiddleware } from "../middlewares";
-import { adminAuthMiddleware } from "../middlewares/admin-auth.middleware";
+import { authMiddleware,adminAuthMiddleware } from "../middlewares";
 
 export const userRouter = Router();
 

@@ -1,11 +1,14 @@
-import { readJsonFromDiskAsync } from "tsconfig-paths/lib/filesystem";
 import { User } from "../../models";
 import { IPagination, IUser, IUserResponse } from "../../types";
 import { IUserService } from "./user.interface";
 import { mapUserResponse } from "../../mappers";
-import { paginate } from "../../utils/pagination.util";
 import { FilterQuery } from "mongoose";
-import { comparePassword, createHttpsError, hashPassword } from "../../utils";
+import {
+  comparePassword,
+  createHttpsError,
+  hashPassword,
+  paginate,
+} from "../../utils";
 import { StatusCodes } from "http-status-codes";
 import { ERROR_RESPONSES } from "../../constants";
 

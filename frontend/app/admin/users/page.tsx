@@ -35,7 +35,6 @@ const UserManagement = () => {
     page: 1,
   });
   const [users, setUsers] = useState<IUser[]>([]);
-  const { user } = useAuth();
   const limit = 6;
 
   useEffect(() => {
@@ -82,7 +81,7 @@ const UserManagement = () => {
                   type="text"
                   color="black"
                   mr={5}
-                  placeholder="Search blogs..."
+                  placeholder="Search Users..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />

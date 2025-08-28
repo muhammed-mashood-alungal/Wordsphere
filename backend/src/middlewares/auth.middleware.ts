@@ -21,13 +21,12 @@ export const authMiddleware: RequestHandler = async (
     }
     const isRevoked = await isTokenRevoked(token);
     if (isRevoked) {
-      createHttpsError(StatusCodes.UNAUTHORIZED, ERROR_RESPONSES.TOKEN_REVOKED);
-      return;
+       throw createHttpsError(StatusCodes.UNAUTHORIZED, ERROR_RESPONSES.TOKEN_REVOKED);
     }
     const user = verifyToken(token);
     if (!user) {
-      createHttpsError(StatusCodes.UNAUTHORIZED, ERROR_RESPONSES.INVALID_TOKEN);
-      return;
+      throw createHttpsError(StatusCodes.UNAUTHORIZED, ERROR_RESPONSES.INVALID_TOKEN);
+     
     }
     req.user = user.id as string;
 

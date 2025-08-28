@@ -27,6 +27,7 @@ export const blacklistToken = async (token: string) => {
     await redisClient.set(token, "revoked", {
       EX: 3600,
     });
+    redisClient.get(token);
   } catch (err) {
     console.error("Error blacklisting token:", err);
   }

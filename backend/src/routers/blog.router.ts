@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { BlogService } from "../services";
 import { BlogController } from "../controllers";
-import { authMiddleware } from "../middlewares";
-import { adminAuthMiddleware } from "../middlewares/admin-auth.middleware";
+import { authMiddleware,adminAuthMiddleware } from "../middlewares";
 
 export const blogRouter = Router();
 
