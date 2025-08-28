@@ -14,7 +14,9 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users = await this._userServices.getAllUsers(req.query as IFilterOptions);
+      const users = await this._userServices.getAllUsers(
+        req.query as IFilterOptions
+      );
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK, { users });
     } catch (error) {
       next(error);
@@ -40,6 +42,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
+      console.log('I AM HERE')
       const { userId } = req.params;
       const user = await this._userServices.getUserById(userId);
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK, { user });
@@ -67,7 +70,7 @@ export class UserController implements IUserController {
   ): Promise<void> {
     try {
       const { userId } = req.params;
-      await this._userServices.toggleDelete(userId , true);
+      await this._userServices.toggleDelete(userId, true);
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK);
     } catch (error) {
       next(error);
@@ -82,6 +85,19 @@ export class UserController implements IUserController {
     try {
       const { userId } = req.params;
       await this._userServices.toggleDelete(userId, false);
+      successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async changePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { oldPass, newPass } = req.body;
+      await this._userServices.changePassword(req.user, oldPass, newPass);
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK);
     } catch (error) {
       next(error);

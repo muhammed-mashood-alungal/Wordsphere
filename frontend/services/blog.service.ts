@@ -2,10 +2,15 @@ import { blogInstance } from "@/axios/instances.axios";
 import { IBlogFormData } from "@/types/blog.types";
 
 const BlogService = {
-  getBlogs: async (page: number, limit: number, search: string) => {
+  getBlogs: async (
+    page: number,
+    limit: number,
+    search: string,
+    author?: string
+  ) => {
     try {
       const response = await blogInstance.get("/", {
-        params: { page, limit, search },
+        params: { page, limit, search, author },
       });
       return response.data.data;
     } catch (error) {

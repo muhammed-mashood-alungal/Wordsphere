@@ -10,20 +10,44 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Pen } from "lucide-react";
-import {  useState } from "react";
+import { useState } from "react";
 import BaseModal from "../common/base-modal";
 import BlogForm from "./blog-form";
 import BlogViewer from "./blog-read";
+import BlogService from "@/services/blog.service";
+import toast from "react-hot-toast";
 
 interface BlogCardProps {
   blog: IBlog;
-  onEdit: (id: string, data: IBlogFormData) => void;
-  onDelete: (id: string) => void;
+  setBlogs: React.Dispatch<React.SetStateAction<IBlog[]>>;
 }
-export const BlogCard: React.FC<BlogCardProps> = ({ blog, onEdit, onDelete }) => {
+export const BlogCard: React.FC<BlogCardProps> = ({ blog, setBlogs }) => {
   const { user } = useAuth();
   const [editingBlog, setEditingBlog] = useState<IBlog | null>(null);
   const [readingBlog, setReadingBlog] = useState<IBlog | null>(null);
+
+  const handleUpdation = async (id: string, data: IBlogFormData) => {
+    try {
+      const { blog } = await BlogService.update(id, data);
+      setBlogs((prev) => prev.map((b) => (b.id === id ? blog : b)));
+      if(readingBlog) setReadingBlog(blog);
+      toast.success("Blog updated successfully!");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleDeletion = async (id: string) => {
+    try {
+      console.log("Deleting blog with id:", id);
+      await BlogService.delete(id);
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
+      toast.success("Blog deleted successfully");
+      setReadingBlog(null);
+    } catch (error) {
+      toast.error("Failed to delete blog");
+    }
+  };
 
   return (
     <Box
@@ -90,7 +114,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onEdit, onDelete }) =>
         <BlogForm
           blog={editingBlog}
           onCancel={() => setEditingBlog(null)}
-          onSubmit={(data) => onEdit(editingBlog?.id as string, data)}
+          onSubmit={(data) => handleUpdation(editingBlog?.id as string, data)}
         />
       </BaseModal>
       <BaseModal isOpen={!!readingBlog} onClose={() => setReadingBlog(null)}>
@@ -103,7 +127,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onEdit, onDelete }) =>
             onEdit={() => {
               if (readingBlog) setEditingBlog(readingBlog);
             }}
-            onDelete={onDelete}
+            onDelete={handleDeletion}
           />
         )}
       </BaseModal>

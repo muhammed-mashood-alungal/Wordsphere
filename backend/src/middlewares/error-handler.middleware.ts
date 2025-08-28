@@ -5,7 +5,7 @@ import { ERROR_RESPONSES } from "../constants";
 
 export const errorHandler = (
   err: Error | HttpError,
-  req: Request,
+  _req: Request,
   res: Response,
   _next: NextFunction
 ) => {

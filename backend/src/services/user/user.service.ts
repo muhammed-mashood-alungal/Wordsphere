@@ -5,6 +5,9 @@ import { IUserService } from "./user.interface";
 import { mapUserResponse } from "../../mappers";
 import { paginate } from "../../utils/pagination.util";
 import { FilterQuery } from "mongoose";
+import { comparePassword, createHttpsError } from "../../utils";
+import { StatusCodes } from "http-status-codes";
+import { ERROR_RESPONSES } from "../../constants";
 
 export class UserService implements IUserService {
   async getAllUsers(options?: any): Promise<IPagination<IUserResponse>> {
@@ -44,5 +47,25 @@ export class UserService implements IUserService {
   async toggleDelete(userId: string, isDeleted: boolean): Promise<boolean> {
     const result = await User.findByIdAndUpdate(userId, { isDeleted });
     return result !== null;
+  }
+
+  async changePassword(
+    userId: string,
+    oldPass: string,
+    newPass: string
+  ): Promise<boolean> {
+    const user = await User.findById(userId);
+    if (!user) return false;
+
+    const isMatch = await comparePassword(oldPass, user.password);
+    if (!isMatch)
+      throw createHttpsError(
+        StatusCodes.UNAUTHORIZED,
+        ERROR_RESPONSES.OLD_PASSWORD_INCORRECT
+      );
+
+    user.password = newPass;
+    await user.save();
+    return true;
   }
 }

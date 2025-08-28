@@ -63,27 +63,9 @@ const MainHome = () => {
     }
   };
 
-  const handleUpdation = async (id: string, data: IBlogFormData) => {
-    try {
-      const { blog } = await BlogService.update(id, data);
-      setBlogs((prev) => prev.map((b) => (b.id === id ? blog : b)));
-      toast.success("Blog updated successfully!");
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-    }
-  };
 
-  const handleDeletion = async (id: string) => {
-    try {
-      console.log('Deleting blog with id:', id);
-      await BlogService.delete(id);
-      setBlogs((prev) => prev.filter((b) => b.id !== id));
-      toast.success("Blog deleted successfully");
-      setIsBlogModalOpen(false)
-    } catch (error) {
-      toast.error("Failed to delete blog");
-    }
-  };
+
+  
 
   return (
     <Box minH="100vh" bg="gray.100" py={8}>
@@ -132,7 +114,11 @@ const MainHome = () => {
               <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
             )}
             {blogs?.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} onEdit={handleUpdation} onDelete={handleDeletion} />
+              <BlogCard
+                key={blog.id}
+                blog={blog}
+                setBlogs={setBlogs}
+              />
             ))}
           </SimpleGrid>
 

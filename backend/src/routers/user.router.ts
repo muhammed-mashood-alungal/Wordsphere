@@ -18,6 +18,11 @@ userRouter.get(
   authMiddleware,
   userController.getAllUsers.bind(userController)
 );
+userRouter.put(
+  "/change-password",
+  authMiddleware,
+  userController.changePassword.bind(userController)
+);
 userRouter.get(
   "/:userId",
   authMiddleware,
@@ -38,4 +43,3 @@ userRouter.patch(
   authMiddleware,
   userController.restoreUser.bind(userController)
 );
-

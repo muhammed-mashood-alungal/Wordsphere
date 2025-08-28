@@ -21,9 +21,12 @@ export class BlogService implements IBlogService {
     const limit = Number(options.limit) || 10;
     const skip = (page - 1) * limit;
     const search = String(options.search || "").toLowerCase();
-    filter.isDeleted = false
+    filter.isDeleted = false;
     if (options.search) {
       filter.title = { $regex: search, $options: "i" };
+    }
+    if (options.author) {
+      filter.author = options.author;
     }
 
     let blogs = await Blog.find(filter)

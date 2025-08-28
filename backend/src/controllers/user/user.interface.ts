@@ -6,4 +6,5 @@ export interface IUserController {
   getUserById(req: Request, res: Response, next: NextFunction): Promise<void>;
   updateUser(req: Request, res: Response, next: NextFunction): Promise<void>;
   deleteUser(req: Request, res: Response, next: NextFunction): Promise<void>;
+  changePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

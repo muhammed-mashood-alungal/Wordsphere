@@ -5,4 +5,5 @@ export interface IUserService {
   getUserById(userId: string): Promise<IUserResponse | null>;
   updateUser(userId: string, data: IUser): Promise<IUserResponse | null>;
   toggleDelete(userId: string, isDeleted: boolean): Promise<boolean>;
+  changePassword(userId: string, oldPass: string, newPass: string): Promise<boolean>;
 }

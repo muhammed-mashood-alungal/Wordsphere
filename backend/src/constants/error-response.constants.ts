@@ -7,5 +7,6 @@ export const ERROR_RESPONSES = {
   INVALID_CREDENTIALS: "Invalid Credentials",
   NO_TOKEN_PROVIDED: "No token provided",
   TOKEN_REVOKED: "Token has been revoked",
-  INVALID_TOKEN: "Invalid token"
+  INVALID_TOKEN: "Invalid token",
+  OLD_PASSWORD_INCORRECT: "Old password is incorrect"
 } as const;

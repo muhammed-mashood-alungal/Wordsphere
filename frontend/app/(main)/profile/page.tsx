@@ -1,6 +1,14 @@
 "use client";
 
+import { BlogCard } from "@/components/blog/blog-card";
+import BaseModal from "@/components/common/base-modal";
+import { Pagination } from "@/components/common/pagination";
+import ChangePassForm from "@/components/user/change-password";
+import { useAuth } from "@/context/auth.context";
+import BlogService from "@/services/blog.service";
+import { UserServices } from "@/services/user.service";
 import { IBlog } from "@/types/blog.types";
+import { IChangePassForm } from "@/types/user.types";
 import {
   Box,
   Container,
@@ -12,80 +20,60 @@ import {
   SimpleGrid,
   Icon,
   useBreakpointValue,
-  useDisclosure,
+  Flex,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 import { FiUser, FiMail, FiLock, FiEdit3, FiCalendar } from "react-icons/fi";
 
-const UserBlogCard = ({
-  blog,
-  onEdit,
-}: {
-  blog: IBlog;
-  onEdit?: (blogId: string) => void;
-}) => (
-  <Box
-    bg="white"
-    shadow="base"
-    rounded="xl"
-    overflow="hidden"
-    _hover={{
-      shadow: "lg",
-      transform: "translateY(-1px)",
-    }}
-    transition="all 0.2s"
-    p={6}
-  >
-    <VStack gap={4} align="stretch">
-      <HStack justify="space-between" align="flex-start">
-        <Box
-          px={2}
-          py={1}
-          rounded="md"
-          fontSize="xs"
-          bg={!blog.isDeleted ? "green.50" : "orange.50"}
-          color={!blog.isDeleted ? "green.600" : "orange.600"}
-        >
-          {blog.isDeleted && "Deleted"}
-        </Box>
-      </HStack>
 
-      <Heading size="sm" color="black">
-        {blog.title}
-      </Heading>
-
-      <Text color="gray.600" fontSize="sm" lineHeight="1.5">
-        {blog?.author?.username}
-      </Text>
-
-      <HStack justify="space-between" align="center" pt={2}>
-        <Text fontSize="xs" color="gray.500">
-          {blog.createdAt?.toDateString()}
-        </Text>
-
-        <Button
-          size="sm"
-          variant="ghost"
-          color="gray.600"
-          _hover={{ bg: "gray.100", color: "gray.700" }}
-          onClick={() => onEdit?.(blog.id)}
-        >
-          <Icon as={FiEdit3} mr={2} />
-          Edit
-        </Button>
-      </HStack>
-    </VStack>
-  </Box>
-);
-
- const ProfileSection = ({
-  user ,
-  userBlogs,
-  onChangePassword,
-  onEditBlog,
-}: any) => {
-  const {  onOpen, onClose } = useDisclosure();
+const ProfileSection = () => {
   const columns = useBreakpointValue({ base: 1, lg: 2 }) || 1;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [myBlogs, setMyBlogs] = useState<IBlog[]>([]);
+  const router = useRouter();
+  const { user, authLoading } = useAuth();
+  const limit = 2;
+  const [pagination, setPagination] = useState({
+    page: 1,
+    totalPages: 1,
+  });
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  const fetchMyBlogs = async (page: number) => {
+    try {
+      const { blogs } = await BlogService.getBlogs(page, limit, "", user?.id);
+      setMyBlogs(blogs.data);
+      setPagination(blogs.pagination);
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
+  };
+
+  useEffect(() => {
+    fetchMyBlogs(1);
+  }, []);
+
+  const onPageChange = (page: number) => {
+    setPagination((prev) => ({ ...prev, currentPage: page }));
+    fetchMyBlogs(page);
+  };
+
+  const handleChangePassword = async (data: IChangePassForm) => {
+    try {
+      const response = await UserServices.changePassword(data);
+      setIsModalOpen(false);
+    } catch (error: unknown) {
+      toast.error((error as Error).message);
+    }
+  };
 
   return (
     <Box minH="100vh" bg="gray.100" py={8}>
@@ -140,108 +128,60 @@ const UserBlogCard = ({
                         Member Since
                       </Text>
                       <Text color="black" fontWeight="medium">
-                        {user?.createdAt?.toDateString() }
+                        {user?.createdAt
+                          ? new Date(user.createdAt).toDateString()
+                          : ""}
                       </Text>
                     </VStack>
                   </HStack>
                 </VStack>
-
-             
 
                 <Button
                   variant="outline"
                   borderColor="gray.300"
                   color="gray.600"
                   _hover={{ bg: "gray.100", borderColor: "gray.400" }}
-                  onClick={onOpen}
+                  onClick={() => setIsModalOpen(true)}
                 >
                   <Icon as={FiLock} mr={2} />
                   Change Password
                 </Button>
-              </VStack>
-            </Box>
-
-            {/* Stats Card */}
-            <Box bg="white" shadow="base" rounded="xl" p={8}>
-              <VStack gap={6}>
-                <Heading size="md" color="black">
-                  Statistics
-                </Heading>
-
-                <HStack gap={8} justify="center">
-                  <VStack gap={1}>
-                    <Text fontSize="xl" fontWeight="bold" color="green.500">
-                      {
-                        userBlogs?.filter((blog: IBlog) => !blog?.isDeleted)
-                          .length
-                      }
-                    </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      Published
-                    </Text>
-                  </VStack>
-                  <VStack gap={1}>
-                    <Text fontSize="xl" fontWeight="bold" color="orange.500">
-                      {
-                        userBlogs?.filter((blog: IBlog) => blog?.isDeleted)
-                          .length
-                      }
-                    </Text>
-                    <Text fontSize="sm" color="gray.500">
-                      Deleted
-                    </Text>
-                  </VStack>
-                </HStack>
+                <BaseModal
+                  isOpen={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                >
+                  <ChangePassForm
+                    onSubmit={handleChangePassword}
+                    onCancel={() => setIsModalOpen(false)}
+                  />
+                </BaseModal>
               </VStack>
             </Box>
           </SimpleGrid>
-
-          {/* User Blogs */}
-          <VStack gap={6} align="stretch">
-            <Heading size="md" color="black">
+        </VStack>
+        <VStack gap={8} align="stretch" marginTop={10}>
+          <Flex justify={"space-between"} align={"center"}>
+            <Heading size="lg" color="black">
               My Blogs
             </Heading>
-
-            <SimpleGrid columns={columns} gap={6}>
-              {userBlogs?.map((blog: IBlog) => (
-                <UserBlogCard key={blog.id} blog={blog} onEdit={onEditBlog} />
-              ))}
-            </SimpleGrid>
-
-            {userBlogs?.length === 0 && (
-              <Box
-                bg="white"
-                shadow="base"
-                rounded="xl"
-                p={12}
-                textAlign="center"
-              >
-                <VStack gap={4}>
-                  <Text color="gray.500" fontSize="lg">
-                    No blogs yet
-                  </Text>
-                  <Text color="gray.400">
-                    Start writing your first blog post
-                  </Text>
-                  <Button
-                    bg="gray.600"
-                    color="white"
-                    _hover={{ bg: "gray.700" }}
-                    size="lg"
-                  >
-                    Create Blog
-                  </Button>
-                </VStack>
-              </Box>
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={onPageChange}
+            />
+          </Flex>
+          <SimpleGrid columns={columns} gap={6}>
+            {myBlogs.length === 0 && (
+              <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
             )}
-          </VStack>
+            {myBlogs?.map((blog) => (
+              <BlogCard key={blog.id} blog={blog} setBlogs={setMyBlogs} />
+            ))}
+          </SimpleGrid>
         </VStack>
       </Container>
-
-      {/* <ChangePasswordModal isOpen={isOpen} onClose={onClose} /> */}
     </Box>
   );
 };
 
-
-export default ProfileSection
+export default ProfileSection;
