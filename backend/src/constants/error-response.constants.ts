@@ -1,3 +1,5 @@
+import { FORBIDDEN } from "http-status-codes";
+
 export const ERROR_RESPONSES = {
   NOT_FOUND: "Endpoint Not Found",
   INTERNAL_SERVER_ERROR: "Internal Server Error",
@@ -8,5 +10,7 @@ export const ERROR_RESPONSES = {
   NO_TOKEN_PROVIDED: "No token provided",
   TOKEN_REVOKED: "Token has been revoked",
   INVALID_TOKEN: "Invalid token",
-  OLD_PASSWORD_INCORRECT: "Old password is incorrect"
+  OLD_PASSWORD_INCORRECT: "Old password is incorrect",
+  ACCOUNT_BANNED: "Account has been banned",
+  FORBIDDEN: "Access denied. Admins only.",
 } as const;

@@ -12,7 +12,7 @@ export const paginate = <T>(
       total,
       page,
       limit,
-      totalPages,
+      totalPages: totalPages || 1,
     },
     data,
   };

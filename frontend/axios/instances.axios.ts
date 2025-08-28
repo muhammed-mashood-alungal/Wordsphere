@@ -12,8 +12,6 @@ const createAxiosInstance = (baseUrl: string) => {
     (config) => {
       const token =
         typeof window !== "undefined" ? localStorage.getItem("word_sphere_token") : null;
-        console.log(token)
-        console.log('asdfasdfasdfasdf')
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }

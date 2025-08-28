@@ -10,27 +10,27 @@ export class AuthController implements IAuthController {
 
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const token = await this._authServices.signup(req.body);
+      const { token, user } = await this._authServices.signup(req.body);
       successResponse(
         res,
         StatusCodes.CREATED,
         SUCCESS_RESPONSES.SIGNUP_SUCCESS,
-        { token }
+        { token, user }
       );
     } catch (error) {
       next(error);
-    }
+    }   
   }
 
   async signin(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const {token , user} = await this._authServices.signin(
+      const { token, user } = await this._authServices.signin(
         req.body.email,
         req.body.password
       );
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.SIGNIN_SUCCESS, {
         token,
-        user
+        user,
       });
     } catch (error) {
       next(error);
@@ -51,7 +51,8 @@ export class AuthController implements IAuthController {
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await this._authServices.logout(req.headers.authorization!);
+      const token = req.headers.authorization?.split(" ")[1]!;
+      await this._authServices.logout(token);
       successResponse(
         res,
         StatusCodes.NO_CONTENT,

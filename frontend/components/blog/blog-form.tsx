@@ -18,8 +18,8 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { blogSchema } from "@/schema/blog.shema";
 import { IBlog, IBlogFormData } from "@/types/blog.types";
-
-
+import { useAuth } from "@/context/auth.context";
+import { useRouter } from "next/navigation";
 
 interface BlogFormProps {
   blog?: IBlogFormData | null;
@@ -47,6 +47,18 @@ const BlogForm = ({
     defaultValues: blog || { title: "", content: "" },
   });
 
+  const { user, authLoading } = useAuth();
+  const router = useRouter();
+
+  
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+      toast.error("You must be logged in to create or edit a blog.");
+    }
+  }, [authLoading, user]);
+
   useEffect(() => {
     if (blog) reset(blog);
   }, [blog, reset]);
@@ -57,8 +69,8 @@ const BlogForm = ({
       if (!isUpdateMode) reset({ title: "", content: "" });
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
-    }finally{
-        onCancel()
+    } finally {
+      onCancel();
     }
   };
 
@@ -153,6 +165,8 @@ const BlogForm = ({
                 variant="outline"
                 onClick={handleCancel}
                 size="lg"
+                color={"black"}
+                _hover={{ color: "gray.100" }}
                 w={{ base: "full", sm: "auto" }}
                 minW="120px"
                 loading={isSubmitting || isLoading}

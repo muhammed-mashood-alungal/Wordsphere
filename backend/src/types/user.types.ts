@@ -13,6 +13,7 @@ export interface IUser {
 
 export type ICreateUser = Omit<IUser, "_id" | "createdAt" | "updatedAt">;
 
-export type IUserResponse = Omit<IUser, "_id" | "password" | "isDeleted"> & {
+export type IUserResponse = Omit<IUser, "_id" | "password" > & {
   id: string;
+
 };

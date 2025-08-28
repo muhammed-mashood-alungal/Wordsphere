@@ -21,17 +21,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchUser();
-    console.log("USER IN AUTH");
-    console.log(user);
   }, []);
-  
+
 
   const fetchUser = async () => {
     try {
       setAuthLoading(true);
       const { user } = await AuthService.authMe();
-      setUser(user);
-      setIsAuthenticated(!!user);
+      setAuth(user)
     } catch (error) {
       setIsAuthenticated(false);
     } finally {

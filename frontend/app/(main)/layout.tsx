@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/sidebat";
 import MainHome from "./home/page";
 import ProfileSection from "./profile/page";
 import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth.context";
 
 const MainLayout = () => {
   const [activeSection, setActiveSection] = useState<"home" | "profile">(
@@ -13,6 +14,7 @@ const MainLayout = () => {
   );
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (pathname.includes("profile")) {
@@ -22,7 +24,6 @@ const MainLayout = () => {
     }
   }, [pathname]);
 
-  
   const sidebarWidth = useBreakpointValue({ base: 0, md: 280 });
   const isMobile = useBreakpointValue({ base: true, md: false });
 
@@ -31,7 +32,7 @@ const MainLayout = () => {
     router.push(`/${section}`);
   };
 
-  const handleAdminClick = () => router.push("/admin");
+  const handleAdminClick = () => router.push("/admin/users");
 
   return (
     <Box position="relative" minH="100vh">
@@ -40,6 +41,7 @@ const MainLayout = () => {
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
         onAdminClick={handleAdminClick}
+        isAdmin={user?.role === "admin"}
       />
 
       {/* Main Content */}

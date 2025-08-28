@@ -37,9 +37,9 @@ const RegisterPage = () => {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.push("/");
+      router.push("/home");
     }
-  }, [authLoading]);
+  }, [authLoading , router , user]);
 
   const onSubmit = async (data: RegisterFormData) => {
     try {
@@ -48,10 +48,14 @@ const RegisterPage = () => {
       toast.success("Registration successful!");
       setToken(token);
       setAuth(user);
-      router.push("/");
+      router.push("/home");
       setIsLoading(false);
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+    } catch (error : unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
       setIsLoading(false);
     }
   };

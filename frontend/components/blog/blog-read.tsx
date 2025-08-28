@@ -17,18 +17,21 @@ import BlogService from "@/services/blog.service";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import ConfirmModal from "../common/confirm-modal";
+import { useAuth } from "@/context/auth.context";
 
 interface BlogViewerProps {
   blog: IBlog;
   onEdit?: (blog: IBlog) => void;
   canEdit?: boolean;
   onDelete?: (id: string) => void;
+  onRestore?: (id: string) => void;
 }
 
 const BlogViewer = ({
   blog,
   onEdit,
   onDelete,
+  onRestore,
   canEdit = true,
 }: BlogViewerProps) => {
   const formatDate = (date: Date | string) => {
@@ -40,14 +43,22 @@ const BlogViewer = ({
     });
   };
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
-
+  const { user } = useAuth();
   const handleDelete = () => {
     setConfirmModalOpen(true);
   };
 
   return (
-    <Box w="full" maxW="4xl" mx="auto" h="full">
-      <VStack gap={0} align="stretch" h="full">
+    <Box
+      w="full"
+      maxW="4xl"
+      mx="auto"
+      h="80vh"
+      display="flex"
+      flexDirection="column"
+      bg="white"
+    >
+      <VStack gap={0} align="stretch" h="full" >
         <Box
           color={"gray.800"}
           bg="white"
@@ -91,7 +102,7 @@ const BlogViewer = ({
                 </VStack>
               </HStack>
 
-              {canEdit && (
+              {canEdit && !blog.isDeleted && (
                 <Flex align={"center"} gap={2}>
                   <Button
                     size="sm"
@@ -108,6 +119,13 @@ const BlogViewer = ({
                   </Button>
                 </Flex>
               )}
+              {
+                user?.role == "admin" && blog.isDeleted && (
+                  <Button onClick={() => onRestore?.(blog.id)}>
+                    Restore
+                  </Button>
+                )
+              }
             </Flex>
           </VStack>
         </Box>

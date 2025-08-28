@@ -16,8 +16,8 @@ import { FaBars } from "react-icons/fa";
 import { FiHome, FiUser, FiShield } from "react-icons/fi";
 
 interface SidebarProps {
-  activeSection: "home" | "profile";
-  onSectionChange: (section: "home" | "profile") => void;
+  activeSection: "users" | "blogs";
+  onSectionChange: (section: "users" | "blogs") => void;
   isAdmin?: boolean;
   onAdminClick?: () => void;
 }
@@ -31,7 +31,7 @@ const SidebarContent = ({
   <VStack gap={4} align="stretch" h="full">
     <Box p={6} borderBottom="1px" borderColor="gray.200">
       <Text fontSize="xl" fontWeight="bold" color="black">
-        Dashboard
+        Admin Dashboard
       </Text>
     </Box>
 
@@ -39,43 +39,43 @@ const SidebarContent = ({
       <Button
         w="full"
         justifyContent="flex-start"
-        variant={activeSection === "home" ? "solid" : "ghost"}
-        bg={activeSection === "home" ? "gray.600" : "transparent"}
-        color={activeSection === "home" ? "white" : "gray.600"}
+        variant={activeSection === "users" ? "solid" : "ghost"}
+        bg={activeSection === "users" ? "gray.600" : "transparent"}
+        color={activeSection === "users" ? "white" : "gray.600"}
         _hover={{
-          bg: activeSection === "home" ? "gray.700" : "gray.100",
-          color: activeSection === "home" ? "white" : "gray.700",
+          bg: activeSection === "users" ? "gray.700" : "gray.100",
+          color: activeSection === "users" ? "white" : "gray.700",
         }}
-        onClick={() => onSectionChange("home")}
+        onClick={() => onSectionChange("users")}
         size="lg"
         fontSize="md"
         gap={2}
       >
         <Icon as={FiHome} />
-        Home
+        User Management
       </Button>
 
       <Button
         w="full"
         justifyContent="flex-start"
-        variant={activeSection === "profile" ? "solid" : "ghost"}
-        bg={activeSection === "profile" ? "gray.600" : "transparent"}
-        color={activeSection === "profile" ? "white" : "gray.600"}
+        variant={activeSection === "blogs" ? "solid" : "ghost"}
+        bg={activeSection === "blogs" ? "gray.600" : "transparent"}
+        color={activeSection === "blogs" ? "white" : "gray.600"}
         _hover={{
-          bg: activeSection === "profile" ? "gray.700" : "gray.100",
-          color: activeSection === "profile" ? "white" : "gray.700",
+          bg: activeSection === "blogs" ? "gray.700" : "gray.100",
+          color: activeSection === "blogs" ? "white" : "gray.700",
         }}
-        onClick={() => onSectionChange("profile")}
+        onClick={() => onSectionChange("blogs")}
         size="lg"
         fontSize="md"
         gap={2}
       >
         <Icon as={FiUser} />
-        Profile
+        Blog Management
       </Button>
     </VStack>
 
-    {isAdmin && (
+    
       <>
         <Separator />
         <Box px={4} pb={4}>
@@ -96,15 +96,15 @@ const SidebarContent = ({
             gap={2}
           >
             <Icon as={FiShield} />
-            Go to Admin Panel
+            User Side
           </Button>
         </Box>
       </>
-    )}
+
   </VStack>
 );
 
-export const Sidebar = (props: SidebarProps) => {
+export const AdminSidebar = (props: SidebarProps) => {
   const { open, onOpen, onClose, setOpen } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
 

@@ -6,6 +6,7 @@ export const mapUserResponse = (user: IUser): IUserResponse => {
     email: user.email,
     username: user.username,
     role: user.role,
+    isDeleted: user.isDeleted,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

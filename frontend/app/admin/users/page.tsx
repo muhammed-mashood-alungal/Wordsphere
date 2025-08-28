@@ -4,9 +4,12 @@ import { BlogCard } from "@/components/blog/blog-card";
 import BlogForm from "@/components/blog/blog-form";
 import BaseModal from "@/components/common/base-modal";
 import { Pagination } from "@/components/common/pagination";
+import { UserCard } from "@/components/user/user-card";
 import { useAuth } from "@/context/auth.context";
 import BlogService from "@/services/blog.service";
+import { UserServices } from "@/services/user.service";
 import { IBlog, IBlogFormData } from "@/types/blog.types";
+import { IUser } from "@/types/user.types";
 import {
   Box,
   Container,
@@ -19,57 +22,40 @@ import {
   Button,
   Input,
 } from "@chakra-ui/react";
+import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const MainHome = () => {
+const UserManagement = () => {
   const columns = useBreakpointValue({ base: 1, md: 2, xl: 3 });
-  const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
     totalPages: 1,
     page: 1,
   });
-  const [blogs, setBlogs] = useState<IBlog[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
   const { user } = useAuth();
   const limit = 6;
 
   useEffect(() => {
-    fetchBlogs(1, search);
+    fetchUsers(1, search);
   }, [search]);
 
-  const fetchBlogs = async (page: number, search: string) => {
+  const fetchUsers = async (page: number, search: string) => {
     try {
-      const { blogs } = await BlogService.getBlogs(page, limit, search);
-      setBlogs(blogs.data);
-      setPagination(blogs.pagination);
+      const { users } = await UserServices.getUsers(page, limit, search);
+      setUsers(users.data);
+      setPagination(users.pagination);
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to fetch blogs");
-      }
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
     }
   };
 
   const onPageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, currentPage: page }));
-    fetchBlogs(page, search);
+    fetchUsers(page, search);
   };
-
-  const handleSubmit = async (data: IBlogFormData) => {
-    try {
-      const { blog } = await BlogService.create(data, user?.id as string);
-      toast.success("Blog created successfully!");
-      setBlogs([blog, ...blogs.slice(0, -1)]);
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-    }
-  };
-
-
-
-  
 
   return (
     <Box minH="100vh" bg="gray.100" py={8}>
@@ -78,11 +64,9 @@ const MainHome = () => {
           <Flex align="center" justify="space-between">
             <VStack align="flex-start" gap={1}>
               <Heading size="lg" color="black">
-                Latest Blogs
+                All Users
               </Heading>
-              <Text color="gray.600">
-                Discover the latest articles and insights
-              </Text>
+              <Text color="gray.600">Full List of users </Text>
             </VStack>
             <Flex align={"center"}>
               <Box display={{ base: "none", md: "block" }}>
@@ -102,27 +86,16 @@ const MainHome = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <Button
-                  variant={"surface"}
-                  _hover={{ bg: "gray.600" }}
-                  onClick={() => setIsBlogModalOpen(true)}
-                >
-                  Create Blog
-                </Button>
               </Flex>
             </Flex>
           </Flex>
 
           <SimpleGrid columns={columns} gap={6}>
-            {blogs.length === 0 && (
-              <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
+            {users.length === 0 && (
+              <Text color={"gray.600"}> Oops, No users found......</Text>
             )}
-            {blogs?.map((blog) => (
-              <BlogCard
-                key={blog.id}
-                blog={blog}
-                setBlogs={setBlogs}
-              />
+            {users?.map((user) => (
+              <UserCard key={user.id} userData={user} setUsers={setUsers} />
             ))}
           </SimpleGrid>
 
@@ -135,17 +108,8 @@ const MainHome = () => {
           </Flex>
         </VStack>
       </Container>
-      <BaseModal
-        isOpen={isBlogModalOpen}
-        onClose={() => setIsBlogModalOpen(false)}
-      >
-        <BlogForm
-          onSubmit={handleSubmit}
-          onCancel={() => setIsBlogModalOpen(false)}
-        />
-      </BaseModal>
     </Box>
   );
 };
 
-export default MainHome;
+export default UserManagement;

@@ -6,4 +6,5 @@ export interface IBlogService {
   getBlogById(id: string): Promise<IBlogResponse | null>;
   updateBlog(id: string, data: Partial<IBlog>): Promise<IBlogResponse | null>;
   toggleDelete(id: string, isDeleted: boolean): Promise<boolean>;
+  verifyOwner(userId: string, blogId: string): Promise<boolean>;
 }

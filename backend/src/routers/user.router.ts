@@ -2,6 +2,7 @@ import { Router } from "express";
 import { UserService } from "../services";
 import { UserController } from "../controllers";
 import { authMiddleware } from "../middlewares";
+import { adminAuthMiddleware } from "../middlewares/admin-auth.middleware";
 
 export const userRouter = Router();
 
@@ -16,6 +17,7 @@ userRouter.get(
 userRouter.get(
   "/",
   authMiddleware,
+  adminAuthMiddleware,
   userController.getAllUsers.bind(userController)
 );
 userRouter.put(
@@ -36,10 +38,12 @@ userRouter.put(
 userRouter.delete(
   "/:userId",
   authMiddleware,
+  adminAuthMiddleware,
   userController.deleteUser.bind(userController)
 );
 userRouter.patch(
   "/:userId/restore",
   authMiddleware,
+  adminAuthMiddleware,
   userController.restoreUser.bind(userController)
 );

@@ -8,7 +8,7 @@ import {
   IBlogResponse,
 } from "../../types";
 import { IBlogService } from "./blog.interface";
-import { Blog } from "../../models";
+import { Blog, User } from "../../models";
 import { paginate } from "../../utils";
 import { mapBlogResponse } from "../../mappers";
 
@@ -21,7 +21,10 @@ export class BlogService implements IBlogService {
     const limit = Number(options.limit) || 10;
     const skip = (page - 1) * limit;
     const search = String(options.search || "").toLowerCase();
-    filter.isDeleted = false;
+
+    if (!options.includeDeleted) {
+      filter.isDeleted = false;
+    }
     if (options.search) {
       filter.title = { $regex: search, $options: "i" };
     }
@@ -70,5 +73,13 @@ export class BlogService implements IBlogService {
   async toggleDelete(blogId: string, isDeleted: boolean): Promise<boolean> {
     const result = await Blog.findByIdAndUpdate(blogId, { isDeleted });
     return result !== null;
+  }
+
+  async verifyOwner(userId: string, blogId: string): Promise<boolean> {
+    const blog = await Blog.findById(blogId).lean<IBlog>();
+    if (!blog) return false;
+    const user = await User.findById(userId).lean<IUser>();
+    if (!user) return false;
+    return blog.author.toString() === userId || user.role === "admin";
   }
 }

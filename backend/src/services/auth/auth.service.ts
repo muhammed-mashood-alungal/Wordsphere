@@ -53,6 +53,13 @@ export class AuthService implements IAuthService {
         ERROR_RESPONSES.INVALID_CREDENTIALS
       );
 
+    if (user.isDeleted) {
+      throw createHttpsError(
+        StatusCodes.UNAUTHORIZED,
+        ERROR_RESPONSES.ACCOUNT_BANNED
+      );
+    }
+
     const token = generateToken({
       id: user._id as string,
       role: user.role,

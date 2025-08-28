@@ -5,7 +5,7 @@ import { IUserService } from "./user.interface";
 import { mapUserResponse } from "../../mappers";
 import { paginate } from "../../utils/pagination.util";
 import { FilterQuery } from "mongoose";
-import { comparePassword, createHttpsError } from "../../utils";
+import { comparePassword, createHttpsError, hashPassword } from "../../utils";
 import { StatusCodes } from "http-status-codes";
 import { ERROR_RESPONSES } from "../../constants";
 
@@ -17,7 +17,7 @@ export class UserService implements IUserService {
     const skip = (page - 1) * limit;
 
     if (options?.search) {
-      filter.name = { $regex: options.search, $options: "i" };
+      filter.username = { $regex: options.search, $options: "i" };
       filter.email = { $regex: options.search, $options: "i" };
     }
 
@@ -64,7 +64,7 @@ export class UserService implements IUserService {
         ERROR_RESPONSES.OLD_PASSWORD_INCORRECT
       );
 
-    user.password = newPass;
+    user.password = await hashPassword(newPass);
     await user.save();
     return true;
   }

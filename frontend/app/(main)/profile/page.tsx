@@ -5,6 +5,7 @@ import BaseModal from "@/components/common/base-modal";
 import { Pagination } from "@/components/common/pagination";
 import ChangePassForm from "@/components/user/change-password";
 import { useAuth } from "@/context/auth.context";
+import AuthService from "@/services/auth.service";
 import BlogService from "@/services/blog.service";
 import { UserServices } from "@/services/user.service";
 import { IBlog } from "@/types/blog.types";
@@ -28,13 +29,12 @@ import toast from "react-hot-toast";
 
 import { FiUser, FiMail, FiLock, FiEdit3, FiCalendar } from "react-icons/fi";
 
-
 const ProfileSection = () => {
   const columns = useBreakpointValue({ base: 1, lg: 2 }) || 1;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [myBlogs, setMyBlogs] = useState<IBlog[]>([]);
   const router = useRouter();
-  const { user, authLoading } = useAuth();
+  const { user, authLoading, setAuth } = useAuth();
   const limit = 2;
   const [pagination, setPagination] = useState({
     page: 1,
@@ -45,7 +45,7 @@ const ProfileSection = () => {
     if (!authLoading && !user) {
       router.push("/login");
     }
-  }, [user, router]);
+  }, [user, router , authLoading]);
 
   const fetchMyBlogs = async (page: number) => {
     try {
@@ -68,10 +68,24 @@ const ProfileSection = () => {
 
   const handleChangePassword = async (data: IChangePassForm) => {
     try {
-      const response = await UserServices.changePassword(data);
+      await UserServices.changePassword(data);
       setIsModalOpen(false);
     } catch (error: unknown) {
-      toast.error((error as Error).message);
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await AuthService.logout();
+      setAuth(null);
+    } catch (error : unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+      
     }
   };
 
@@ -79,14 +93,26 @@ const ProfileSection = () => {
     <Box minH="100vh" bg="gray.100" py={8}>
       <Container maxW="6xl" px={{ base: 4, lg: 8 }}>
         <VStack gap={8} align="stretch">
-          <VStack align="flex-start" gap={1}>
-            <Heading size="lg" color="black">
-              Profile
-            </Heading>
-            <Text color="gray.600">
-              Manage your account details and view your content
-            </Text>
-          </VStack>
+          <Flex justify={"space-between"} align={"center"}>
+            <VStack align="flex-start" gap={1}>
+              <Heading size="lg" color="black">
+                Profile
+              </Heading>
+              <Text color="gray.600">
+                Manage your account details and view your content
+              </Text>
+            </VStack>
+            <VStack align="flex-end">
+              <Button
+                variant="outline"
+                color={"black"}
+                _hover={{ color: "white" }}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </VStack>
+          </Flex>
 
           <SimpleGrid columns={{ base: 1, xl: 2 }} gap={8}>
             {/* User Details Card */}
@@ -172,7 +198,7 @@ const ProfileSection = () => {
           </Flex>
           <SimpleGrid columns={columns} gap={6}>
             {myBlogs.length === 0 && (
-              <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
+              <Text color={"gray.600"}> Oops, No blogs found......</Text>
             )}
             {myBlogs?.map((blog) => (
               <BlogCard key={blog.id} blog={blog} setBlogs={setMyBlogs} />

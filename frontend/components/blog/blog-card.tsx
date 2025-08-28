@@ -30,22 +30,35 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, setBlogs }) => {
     try {
       const { blog } = await BlogService.update(id, data);
       setBlogs((prev) => prev.map((b) => (b.id === id ? blog : b)));
-      if(readingBlog) setReadingBlog(blog);
+      if (readingBlog) setReadingBlog(blog);
       toast.success("Blog updated successfully!");
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
     }
   };
 
   const handleDeletion = async (id: string) => {
     try {
-      console.log("Deleting blog with id:", id);
       await BlogService.delete(id);
-      setBlogs((prev) => prev.filter((b) => b.id !== id));
+      setBlogs((prev) =>
+        prev.map((b) => (b.id === id ? { ...b, isDeleted: true } : b))
+      );
       toast.success("Blog deleted successfully");
       setReadingBlog(null);
     } catch (error) {
-      toast.error("Failed to delete blog");
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
+    }
+  };
+
+  const handleRestoration = async (id: string) => {
+    try {
+      await BlogService.restore(id);
+      setBlogs((prev) =>
+        prev.map((b) => (b.id === id ? { ...b, isDeleted: false } : b))
+      );
+      toast.success("Blog restored successfully");
+    } catch (error) {
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
     }
   };
 
@@ -128,6 +141,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, setBlogs }) => {
               if (readingBlog) setEditingBlog(readingBlog);
             }}
             onDelete={handleDeletion}
+            onRestore={handleRestoration}
           />
         )}
       </BaseModal>

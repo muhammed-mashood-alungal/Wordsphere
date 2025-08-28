@@ -22,7 +22,7 @@ import {
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const MainHome = () => {
+const BlogManagement = () => {
   const columns = useBreakpointValue({ base: 1, md: 2, xl: 3 });
   const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -40,15 +40,11 @@ const MainHome = () => {
 
   const fetchBlogs = async (page: number, search: string) => {
     try {
-      const { blogs } = await BlogService.getBlogs(page, limit, search);
+      const { blogs } = await BlogService.getAllBlogs(page, limit, search);
       setBlogs(blogs.data);
       setPagination(blogs.pagination);
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to fetch blogs");
-      }
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
     }
   };
 
@@ -63,13 +59,9 @@ const MainHome = () => {
       toast.success("Blog created successfully!");
       setBlogs([blog, ...blogs.slice(0, -1)]);
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error((error as Error).message || "Something went wrong. Please try again.");
     }
   };
-
-
-
-  
 
   return (
     <Box minH="100vh" bg="gray.100" py={8}>
@@ -78,11 +70,9 @@ const MainHome = () => {
           <Flex align="center" justify="space-between">
             <VStack align="flex-start" gap={1}>
               <Heading size="lg" color="black">
-                Latest Blogs
+                All Blogs
               </Heading>
-              <Text color="gray.600">
-                Discover the latest articles and insights
-              </Text>
+              <Text color="gray.600">Full List of blogs from all users</Text>
             </VStack>
             <Flex align={"center"}>
               <Box display={{ base: "none", md: "block" }}>
@@ -115,14 +105,10 @@ const MainHome = () => {
 
           <SimpleGrid columns={columns} gap={6}>
             {blogs.length === 0 && (
-              <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
+              <Text color={"gray.600"}> Oops, No blogs found......</Text>
             )}
             {blogs?.map((blog) => (
-              <BlogCard
-                key={blog.id}
-                blog={blog}
-                setBlogs={setBlogs}
-              />
+              <BlogCard key={blog.id} blog={blog} setBlogs={setBlogs} />
             ))}
           </SimpleGrid>
 
@@ -148,4 +134,4 @@ const MainHome = () => {
   );
 };
 
-export default MainHome;
+export default BlogManagement;

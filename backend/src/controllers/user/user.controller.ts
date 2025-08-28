@@ -42,7 +42,6 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      console.log('I AM HERE')
       const { userId } = req.params;
       const user = await this._userServices.getUserById(userId);
       successResponse(res, StatusCodes.OK, SUCCESS_RESPONSES.OK, { user });

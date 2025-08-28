@@ -39,7 +39,7 @@ const LoginPage = () => {
   
   useEffect(() => {
     if (!authLoading && user) {
-      router.push("/");
+      router.push("/home");
     }
   }, [authLoading, user, router]);
 
@@ -50,9 +50,13 @@ const LoginPage = () => {
       toast.success("Login successful!");
       setToken(token);
       setAuth(user);
-      router.push("/");
-    } catch (error) {
-      toast.error("Invalid email or password");
+      router.push("/home");
+    } catch (error : unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -131,6 +135,7 @@ const LoginPage = () => {
                   border: "none",
                 }}
                 variant="outline"
+                onClick={() => router.push("/register")}
               >
                 Create account
               </Button>
