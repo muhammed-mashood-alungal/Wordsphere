@@ -1,5 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
-import { ICreateUser } from "../../types";
+import { ICreateUser, IUser, IUserResponse } from "../../types";
 import { IAuthService } from "./auth.interface";
 import {
     blacklistToken,
@@ -12,9 +12,10 @@ import {
 import { StatusCodes } from "http-status-codes";
 import { User } from "../../models";
 import { ERROR_RESPONSES } from "../../constants";
+import { mapUserResponse } from "../../mappers";
 
 export class AuthService implements IAuthService {
-  async signup(user: ICreateUser): Promise<string> {
+  async signup(user: ICreateUser): Promise<{token: string, user: IUserResponse}> {
     const isUserExists = await User.findOne({ email: user.email });
     if (isUserExists)
       throw createHttpsError(
@@ -29,10 +30,10 @@ export class AuthService implements IAuthService {
       id: newUser._id as string,
       role: newUser.role,
     });
-    return token;
+    return {token ,  user : mapUserResponse(newUser as IUser)};
   }
 
-  async signin(email: string, password: string): Promise<string> {
+  async signin(email: string, password: string): Promise<{token: string, user: IUserResponse}> {
     const user = await User.findOne({ email });
     if (!user)
       throw createHttpsError(
@@ -51,7 +52,7 @@ export class AuthService implements IAuthService {
       id: user._id as string,
       role: user.role,
     });
-    return token;
+    return {token , user: mapUserResponse(user as IUser)};
   }
 
   authMe(token: string): JwtPayload | string {

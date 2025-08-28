@@ -10,7 +10,7 @@ export class AuthController implements IAuthController {
 
   async signup(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const token = await this._authServices.signup(req.body.userData);
+      const token = await this._authServices.signup(req.body);
       successResponse(
         res,
         StatusCodes.CREATED,
