@@ -8,6 +8,7 @@ const blogSchema = new Schema<IBlogModel>(
     title: {
       type: String,
       required: true,
+      index: true
     },
     content: {
       type: String,

@@ -85,7 +85,6 @@ const ProfileSection = () => {
       } else {
         toast.error("Something went wrong. Please try again.");
       }
-      
     }
   };
 

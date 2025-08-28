@@ -9,6 +9,7 @@ const userSchema = new Schema<IUserModel>(
       type: String,
       required: true,
       unique: true,
+      index: true
     },
     password: {
       type: String,
@@ -17,6 +18,7 @@ const userSchema = new Schema<IUserModel>(
     username: {
       type: String,
       required: true,
+      index: true
     },
     isDeleted: {
       type: Boolean,

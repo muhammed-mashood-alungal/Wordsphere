@@ -26,6 +26,8 @@ const MainHome = () => {
   const columns = useBreakpointValue({ base: 1, md: 2, xl: 3 });
   const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
   const [pagination, setPagination] = useState({
     totalPages: 1,
     page: 1,
@@ -35,7 +37,17 @@ const MainHome = () => {
   const limit = 6;
 
   useEffect(() => {
-    fetchBlogs(1, search);
+    fetchBlogs(1, debouncedSearch);
+  }, [debouncedSearch]);
+
+   useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler); 
+    };
   }, [search]);
 
   const fetchBlogs = async (page: number, search: string) => {
@@ -54,7 +66,7 @@ const MainHome = () => {
 
   const onPageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, currentPage: page }));
-    fetchBlogs(page, search);
+    fetchBlogs(page, debouncedSearch);
   };
 
   const handleSubmit = async (data: IBlogFormData) => {
@@ -66,10 +78,6 @@ const MainHome = () => {
       toast.error("Something went wrong. Please try again.");
     }
   };
-
-
-
-  
 
   return (
     <Box minH="100vh" bg="gray.100" py={8}>
@@ -118,11 +126,7 @@ const MainHome = () => {
               <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
             )}
             {blogs?.map((blog) => (
-              <BlogCard
-                key={blog.id}
-                blog={blog}
-                setBlogs={setBlogs}
-              />
+              <BlogCard key={blog.id} blog={blog} setBlogs={setBlogs} />
             ))}
           </SimpleGrid>
 
