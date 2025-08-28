@@ -1,14 +1,8 @@
 "use client";
 
-import { BlogCard } from "@/components/blog/blog-card";
-import BlogForm from "@/components/blog/blog-form";
-import BaseModal from "@/components/common/base-modal";
 import { Pagination } from "@/components/common/pagination";
 import { UserCard } from "@/components/user/user-card";
-import { useAuth } from "@/context/auth.context";
-import BlogService from "@/services/blog.service";
 import { UserServices } from "@/services/user.service";
-import { IBlog, IBlogFormData } from "@/types/blog.types";
 import { IUser } from "@/types/user.types";
 import {
   Box,
@@ -19,16 +13,13 @@ import {
   VStack,
   SimpleGrid,
   useBreakpointValue,
-  Button,
   Input,
 } from "@chakra-ui/react";
-import { User } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const UserManagement = () => {
   const columns = useBreakpointValue({ base: 1, md: 2, xl: 3 });
-  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
     totalPages: 1,

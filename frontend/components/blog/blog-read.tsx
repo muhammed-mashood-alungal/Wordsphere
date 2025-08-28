@@ -12,9 +12,7 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { IBlog } from "@/types/blog.types";
-import { Calendar, Delete, DeleteIcon, Trash } from "lucide-react";
-import BlogService from "@/services/blog.service";
-import toast from "react-hot-toast";
+import { Calendar, Trash } from "lucide-react";
 import { useState } from "react";
 import ConfirmModal from "../common/confirm-modal";
 import { useAuth } from "@/context/auth.context";

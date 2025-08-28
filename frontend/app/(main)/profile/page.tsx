@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-import { FiUser, FiMail, FiLock, FiEdit3, FiCalendar } from "react-icons/fi";
+import { FiUser, FiMail, FiLock, FiCalendar } from "react-icons/fi";
 
 const ProfileSection = () => {
   const columns = useBreakpointValue({ base: 1, lg: 2 }) || 1;

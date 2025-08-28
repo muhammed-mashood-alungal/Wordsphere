@@ -2,7 +2,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { IUser } from "@/types/user.types";
 import AuthService from "@/services/auth.service";
-import toast from "react-hot-toast";
 
 type AuthContextType = {
   user: IUser | null;

@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { blogSchema } from "@/schema/blog.shema";
-import { IBlog, IBlogFormData } from "@/types/blog.types";
+import {  IBlogFormData } from "@/types/blog.types";
 import { useAuth } from "@/context/auth.context";
 import { useRouter } from "next/navigation";
 

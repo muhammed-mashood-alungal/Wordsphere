@@ -40,13 +40,13 @@ const MainHome = () => {
     fetchBlogs(1, debouncedSearch);
   }, [debouncedSearch]);
 
-   useEffect(() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
     }, 500);
 
     return () => {
-      clearTimeout(handler); 
+      clearTimeout(handler);
     };
   }, [search]);
 
