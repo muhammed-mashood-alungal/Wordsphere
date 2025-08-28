@@ -1,9 +1,12 @@
 "use client";
 
 import { BlogCard } from "@/components/blog/blog-card";
+import BlogForm from "@/components/blog/blog-form";
 import BaseModal from "@/components/common/base-modal";
 import { Pagination } from "@/components/common/pagination";
-import { IBlog } from "@/types/blog.types";
+import { useAuth } from "@/context/auth.context";
+import BlogService from "@/services/blog.service";
+import { IBlog, IBlogFormData } from "@/types/blog.types";
 import {
   Box,
   Container,
@@ -14,90 +17,78 @@ import {
   SimpleGrid,
   useBreakpointValue,
   Button,
+  Input,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-interface MainHomeProps {
-  blogs: IBlog[];
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}
-
-const MainHome = ({
-  blogs,
-  currentPage = 1,
-  totalPages = 3,
-  onPageChange = () => {},
-}: Partial<MainHomeProps>) => {
+const MainHome = () => {
   const columns = useBreakpointValue({ base: 1, md: 2, xl: 3 });
   const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
-  const mockBlogs: any[] = [
-    {
-      id: 1,
-      title: "Getting Started with React and TypeScript",
-      author: "John Doe",
-      date: "Aug 25, 2025",
-      category: "Development",
-      readTime: "5 min read",
-    },
-    {
-      id: 2,
-      title: "Building Responsive Layouts with Chakra UI",
-      excerpt:
-        "Explore the powerful layout components in Chakra UI and learn how to create beautiful, responsive designs.",
-      author: "Jane Smith",
-      date: "Aug 24, 2025",
-      category: "Design",
-      readTime: "8 min read",
-    },
-    {
-      id: 3,
-      title: "Advanced State Management in Next.js",
-      excerpt:
-        "Deep dive into state management patterns for complex Next.js applications using modern techniques.",
-      author: "Mike Johnson",
-      date: "Aug 23, 2025",
-      category: "Development",
-      readTime: "12 min read",
-    },
-    {
-      id: 4,
-      title: "UI/UX Best Practices for 2025",
-      excerpt:
-        "Discover the latest trends and best practices in user interface and user experience design for modern web applications.",
-      author: "Sarah Wilson",
-      date: "Aug 22, 2025",
-      category: "Design",
-      readTime: "6 min read",
-    },
-    {
-      id: 5,
-      title: "Performance Optimization Techniques",
-      excerpt:
-        "Learn various techniques to optimize your web application performance and improve user experience.",
-      author: "David Brown",
-      date: "Aug 21, 2025",
-      category: "Performance",
-      readTime: "10 min read",
-    },
-    {
-      id: 6,
-      title: "Serverless Architecture with Vercel",
-      excerpt:
-        "Explore serverless deployment strategies using Vercel and how to build scalable applications.",
-      author: "Emily Davis",
-      date: "Aug 20, 2025",
-      category: "Infrastructure",
-      readTime: "7 min read",
-    },
-  ];
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState({
+    totalPages: 1,
+    page: 1,
+  });
+  const [blogs, setBlogs] = useState<IBlog[]>([]);
+  const { user } = useAuth();
+  const limit = 2;
+
+  useEffect(() => {
+    fetchBlogs(1, search);
+  }, [search]);
+
+  const fetchBlogs = async (page: number, search: string) => {
+    try {
+      const { blogs } = await BlogService.getBlogs(page, limit, search);
+      setBlogs(blogs.data);
+      setPagination(blogs.pagination);
+    } catch (error) {
+      toast.error("Failed to fetch blogs");
+    }
+  };
+
+  const onPageChange = (page: number) => {
+    setPagination((prev) => ({ ...prev, currentPage: page }));
+    fetchBlogs(page, search);
+  };
+
+  const handleSubmit = async (data: IBlogFormData) => {
+    try {
+      const { blog } = await BlogService.create(data, user?.id as string);
+      toast.success("Blog created successfully!");
+      setBlogs([blog, ...blogs.slice(0, -1)]);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleUpdation = async (id: string, data: IBlogFormData) => {
+    try {
+      const { blog } = await BlogService.update(id, data);
+      setBlogs((prev) => prev.map((b) => (b.id === id ? blog : b)));
+      toast.success("Blog updated successfully!");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleDeletion = async (id: string) => {
+    try {
+      console.log('Deleting blog with id:', id);
+      await BlogService.delete(id);
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
+      toast.success("Blog deleted successfully");
+      setIsBlogModalOpen(false)
+    } catch (error) {
+      toast.error("Failed to delete blog");
+    }
+  };
 
   return (
     <Box minH="100vh" bg="gray.100" py={8}>
       <Container maxW="7xl" px={{ base: 4, lg: 8 }}>
         <VStack gap={8} align="stretch">
-          {/* Header with Pagination */}
           <Flex align="center" justify="space-between">
             <VStack align="flex-start" gap={1}>
               <Heading size="lg" color="black">
@@ -110,39 +101,58 @@ const MainHome = ({
             <Flex align={"center"}>
               <Box display={{ base: "none", md: "block" }}>
                 <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
                   onPageChange={onPageChange}
                 />
               </Box>
 
-              <Box ml={4}>
-                <Button variant={"surface"} _hover={{ bg: "gray.600" }} onClick={() => setIsBlogModalOpen(true)}>
+              <Flex ml={4}>
+                <Input
+                  type="text"
+                  color="black"
+                  mr={5}
+                  placeholder="Search blogs..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                <Button
+                  variant={"surface"}
+                  _hover={{ bg: "gray.600" }}
+                  onClick={() => setIsBlogModalOpen(true)}
+                >
                   Create Blog
                 </Button>
-              </Box>
+              </Flex>
             </Flex>
           </Flex>
 
-          {/* Blog Cards Grid */}
           <SimpleGrid columns={columns} gap={6}>
-            {mockBlogs?.map((blog) => (
-              <BlogCard key={blog.id} blog={blog} />
+            {blogs.length === 0 && (
+              <Text color={"gray.600"}> Oooppsss, No blogs found......</Text>
+            )}
+            {blogs?.map((blog) => (
+              <BlogCard key={blog.id} blog={blog} onEdit={handleUpdation} onDelete={handleDeletion} />
             ))}
           </SimpleGrid>
 
-          {/* Mobile Pagination */}
           <Flex justify="center" display={{ base: "flex", md: "none" }}>
             <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
               onPageChange={onPageChange}
             />
           </Flex>
         </VStack>
       </Container>
-      <BaseModal isOpen={isBlogModalOpen} onClose={() => setIsBlogModalOpen(false)}>
-      HELLO WORLD
+      <BaseModal
+        isOpen={isBlogModalOpen}
+        onClose={() => setIsBlogModalOpen(false)}
+      >
+        <BlogForm
+          onSubmit={handleSubmit}
+          onCancel={() => setIsBlogModalOpen(false)}
+        />
       </BaseModal>
     </Box>
   );

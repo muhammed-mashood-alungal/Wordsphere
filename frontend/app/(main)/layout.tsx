@@ -61,11 +61,7 @@ const mockUser = {
         pt={isMobile ? "60px" : 0} // spacing for mobile hamburger menu
       >
         {activeSection === "home" && (
-          <MainHome
-            currentPage={currentPage}
-            totalPages={3}
-            onPageChange={handlePageChange}
-          />
+          <MainHome/>
         )}
 
         {activeSection === "profile" && (

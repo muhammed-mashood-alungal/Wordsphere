@@ -26,7 +26,6 @@ const BaseModal = ({ isOpen, onClose, children }: BaseModalProps) => {
             p={4}
           >
             <Dialog.Header>
-              <Dialog.Title>Dialog Title</Dialog.Title>
               <Dialog.CloseTrigger asChild>
                 <CloseButton size="sm" onClick={onClose} />
               </Dialog.CloseTrigger>

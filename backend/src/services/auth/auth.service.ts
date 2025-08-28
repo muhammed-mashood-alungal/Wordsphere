@@ -2,7 +2,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { ICreateUser, IUser, IUserResponse } from "../../types";
 import { IAuthService } from "./auth.interface";
 import {
-    blacklistToken,
+  blacklistToken,
   comparePassword,
   createHttpsError,
   generateToken,
@@ -15,7 +15,9 @@ import { ERROR_RESPONSES } from "../../constants";
 import { mapUserResponse } from "../../mappers";
 
 export class AuthService implements IAuthService {
-  async signup(user: ICreateUser): Promise<{token: string, user: IUserResponse}> {
+  async signup(
+    user: ICreateUser
+  ): Promise<{ token: string; user: IUserResponse }> {
     const isUserExists = await User.findOne({ email: user.email });
     if (isUserExists)
       throw createHttpsError(
@@ -30,10 +32,13 @@ export class AuthService implements IAuthService {
       id: newUser._id as string,
       role: newUser.role,
     });
-    return {token ,  user : mapUserResponse(newUser as IUser)};
+    return { token, user: mapUserResponse(newUser as IUser) };
   }
 
-  async signin(email: string, password: string): Promise<{token: string, user: IUserResponse}> {
+  async signin(
+    email: string,
+    password: string
+  ): Promise<{ token: string; user: IUserResponse }> {
     const user = await User.findOne({ email });
     if (!user)
       throw createHttpsError(
@@ -52,10 +57,10 @@ export class AuthService implements IAuthService {
       id: user._id as string,
       role: user.role,
     });
-    return {token , user: mapUserResponse(user as IUser)};
+    return { token, user: mapUserResponse(user as IUser) };
   }
 
-  authMe(token: string): JwtPayload | string {
+  async authMe(token: string): Promise<IUserResponse | null> {
     const decoded = verifyToken(token);
     if (!decoded) {
       throw createHttpsError(
@@ -63,7 +68,14 @@ export class AuthService implements IAuthService {
         ERROR_RESPONSES.INVALID_CREDENTIALS
       );
     }
-    return decoded;
+    const user = await User.findById(decoded.id).lean<IUser>();
+    if (user?.isDeleted) {
+      throw createHttpsError(
+        StatusCodes.UNAUTHORIZED,
+        ERROR_RESPONSES.INVALID_CREDENTIALS
+      );
+    }
+    return mapUserResponse(user as IUser);
   }
 
   async logout(token: string): Promise<void> {

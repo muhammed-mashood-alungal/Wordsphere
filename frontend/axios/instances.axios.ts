@@ -1,3 +1,5 @@
+'use client'
+
 import axios from "axios";
 
 const createAxiosInstance = (baseUrl: string) => {
@@ -9,7 +11,9 @@ const createAxiosInstance = (baseUrl: string) => {
   instance.interceptors.request.use(
     (config) => {
       const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        typeof window !== "undefined" ? localStorage.getItem("word_sphere_token") : null;
+        console.log(token)
+        console.log('asdfasdfasdfasdf')
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -29,5 +33,8 @@ const authInstance = createAxiosInstance(
 const userInstance = createAxiosInstance(
   `${process.env.NEXT_PUBLIC_BACKEND_URL}/users`
 );
+const blogInstance = createAxiosInstance(
+  `${process.env.NEXT_PUBLIC_BACKEND_URL}/blogs`
+);
 
-export { authInstance, userInstance };
+export { authInstance, userInstance, blogInstance };

@@ -1,4 +1,4 @@
-import { Button, HStack, Icon } from "@chakra-ui/react";
+import { Button, HStack, Icon, Text } from "@chakra-ui/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
@@ -13,7 +13,6 @@ export const Pagination = ({
   onPageChange,
 }: PaginationProps) => (
   <HStack gap={2}>
-   
     <Button
       aria-label="Previous page"
       size="sm"
@@ -30,24 +29,9 @@ export const Pagination = ({
       <Icon as={ChevronLeft} boxSize={4} mr={1} /> Prev
     </Button>
 
-    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-      <Button
-        key={page}
-        size="sm"
-        variant={currentPage === page ? "solid" : "outline"}
-        bg={currentPage === page ? "gray.600" : "transparent"}
-        color={currentPage === page ? "white" : "gray.600"}
-        borderColor={currentPage === page ? "gray.600" : "gray.300"}
-        _hover={{
-          bg: currentPage === page ? "gray.700" : "gray.100",
-          borderColor: currentPage === page ? "gray.700" : "gray.400",
-        }}
-        onClick={() => onPageChange(page)}
-        minW="8"
-      >
-        {page}
-      </Button>
-    ))}
+    <Text fontSize="sm" color="gray.600">
+      {currentPage} of {totalPages}
+    </Text>
 
     <Button
       aria-label="Next page"

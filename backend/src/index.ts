@@ -13,7 +13,8 @@ connectRedis();
 
 app.use(cors({
   origin: env.CLIENT_URL,
-  credentials: true
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 app.use(morgan('dev'));
 app.use(express.json());

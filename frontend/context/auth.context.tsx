@@ -21,12 +21,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchUser();
+    console.log("USER IN AUTH");
+    console.log(user);
   }, []);
+  
 
   const fetchUser = async () => {
     try {
       setAuthLoading(true);
-      const user = await AuthService.authMe();
+      const { user } = await AuthService.authMe();
       setUser(user);
       setIsAuthenticated(!!user);
     } catch (error) {
@@ -46,7 +49,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, setAuth, setToken ,authLoading}}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated, setAuth, setToken, authLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );
