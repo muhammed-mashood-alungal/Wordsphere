@@ -60,7 +60,7 @@ cd backend
 npm install
 
 PORT=5000
-MONGO_URI=mongodb+srv://test:test_user@cluster0.cvo3e.mongodb.net/words_sphere_db?retryWrites=true&w=majority&appName=Cluster0
+MONGO_URI=<your-mongo-url>
 JWT_SECRET=<your-jwt-secret>
 REDIS_HOST=<redis-host>          
 REDIS_PORT=<redis-port>           
